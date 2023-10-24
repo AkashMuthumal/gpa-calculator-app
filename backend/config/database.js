@@ -1,21 +1,25 @@
 import mongoose from "mongoose";
 import "dotenv/config";
-import { seedSubjects } from "../data/seed.js";
 
-mongoose.connect(process.env.MONGODB_URI, {
+// Define your MongoDB connection URI (you can use an environment variable)
+const MONGODB_URI = process.env.MONGODB_URI;
+
+// Configure and create the Mongoose connection
+const mongooseOptions = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-});
-
-const connectToDatabase = async () => {
-    try {
-        await mongoose.connection; // Reuse the existing connection
-        console.log("App connected to the database");
-    } catch (error) {
-        console.error("Error connecting to the database:", error);
-        throw error;
-    }
 };
 
-connectToDatabase();
-// seedSubjects();
+const connection = mongoose.createConnection(MONGODB_URI, mongooseOptions);
+
+// Listen for connection events (optional)
+connection.on("connected", () => {
+    console.log("Connected to MongoDB");
+});
+
+connection.on("error", (err) => {
+    console.error("MongoDB connection error:", err);
+});
+
+// Export the Mongoose connection
+export default connection;

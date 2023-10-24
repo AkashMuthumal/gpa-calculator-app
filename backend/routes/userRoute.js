@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin, isAuth, isOwner } from "../middleware/authMiddleware.js";
 
 import {
     getAllUsers,
@@ -12,21 +13,21 @@ import {
 const router = express.Router();
 
 // Route for get all users
-router.get("/", getAllUsers);
+router.get("/", isAdmin, getAllUsers);
 
 // Route for get user by id
-router.get("/:id", getUserById);
+router.get("/:id", isOwner, getUserById);
 
 // Route for Save a new User
-router.post("/", saveNewUser);
+router.post("/", isAdmin, saveNewUser);
 
 // Route for update a User
-router.put("/:id", updateUser);
+router.put("/:id", isOwner, updateUser);
 
 // Route for delete user by id
-router.delete("/:id", deleteUserById);
+router.delete("/:id", isOwner, deleteUserById);
 
 // Route for get user by name
-router.get("/name/:name", getUserByName);
+router.get("/name/:name", isAdmin, getUserByName);
 
 export default router;

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
+import { genPassword, validPassword } from "../utils/passwordUtils.js";
 
 export async function getAllUsers(request, response) {
     try {
@@ -60,11 +61,17 @@ export async function saveNewUser(request, response) {
                 message: `Send all required fields: name, dateOfBirth, specialization, password, dateOfAdmission, regNo`,
             });
         }
+        const saltHash = genPassword(request.body.password);
+
+        const salt = saltHash.salt;
+        const hash = saltHash.hash;
+
         const newUser = {
             name: request.body.name,
             dateOfBirth: new Date(request.body.dateOfBirth),
             specialization: request.body.specialization,
-            password: request.body.password, // use bcrypt or something
+            hash,
+            salt,
             dateOfAdmission: new Date(request.body.dateOfAdmission),
             regNo: request.body.regNo,
         };

@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Table from "react-bootstrap/Table";
-import axios from "axios";
+import axios from "../api/axios";
+import Spinner from "react-bootstrap/Spinner";
+import NavigationBar from "../components/NavigationBar";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Home = () => {
     const [userName, setUserName] = useState("");
@@ -11,6 +14,8 @@ const Home = () => {
     const [user, setUser] = useState("");
     const [loading, setLoading] = useState(true);
     const [gpa, setGpa] = useState(0);
+
+    const navigate = useNavigate();
 
     const grades = {
         "A+": 4.0,
@@ -27,21 +32,36 @@ const Home = () => {
         E: 0,
     };
 
+    useEffect(() => {
+        handleSubmit();
+    }, []);
+
     async function getUser(userName) {
         try {
+            const userId = localStorage.getItem("userId");
             const response = await axios.get(
-                `http://localhost:5555/users/name/${userName}`
+                `/users/${userId}`,
+                {
+                    headers: { "Content-Type": "application/json" },
+                    withCredentials: true,
+                }
             );
+            console.log(response.data);
             return response.data[0];
         } catch (error) {
             console.error("Error fetching user data: ", error);
+            navigate("/login");
         }
     }
 
     async function getEnrolls(userId) {
         try {
             const response = await axios.get(
-                `http://localhost:5555/enrolls/user/${userId}`
+                `/enrolls/user/${userId}`,
+                {
+                    headers: { "Content-Type": "application/json" },
+                    withCredentials: true,
+                }
             );
             return response.data.data;
         } catch (error) {
@@ -52,7 +72,11 @@ const Home = () => {
     async function getSubject(subjectId) {
         try {
             const response = await axios.get(
-                `http://localhost:5555/subjects/${subjectId}`
+                `/subjects/${subjectId}`,
+                {
+                    headers: { "Content-Type": "application/json" },
+                    withCredentials: true,
+                }
             );
             return response.data;
         } catch (error) {
@@ -65,15 +89,13 @@ const Home = () => {
         setUserName(value);
     }
 
-    async function handleSubmit(event) {
+    async function handleSubmit() {
         setLoading(true);
         setGpa(0);
-        event.preventDefault();
+        // event.preventDefault();
 
-        const user = await getUser(userName);
-        setUser(user);
-
-        const enrolls = await getEnrolls(user._id);
+        const userId = localStorage.getItem("userId");
+        const enrolls = await getEnrolls(userId);
         setEnrolls(enrolls);
 
         const subjectPromises = enrolls.map(async (enroll) => {
@@ -113,24 +135,9 @@ const Home = () => {
     }
 
     return (
-        <div className="m-4">
-            <Form className="mb-3" onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Enter name"
-                        onChange={handleChange}
-                        value={userName}
-                    />
-                </Form.Group>
-
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
-
-            <Table striped bordered hover>
+        <div>
+            <NavigationBar />
+            <Table striped bordered hover className="m-4">
                 <thead>
                     <tr>
                         <th>Subject Name</th>
@@ -153,17 +160,27 @@ const Home = () => {
                         ))
                     ) : (
                         <tr>
-                            <td>Loading</td>
-                            <td>Loading</td>
-                            <td>Loading</td>
-                            <td>Loading</td>
-                            <td>Loading</td>
+                            <td>
+                                <Spinner animation="border" variant="primary" />
+                            </td>
+                            <td>
+                                <Spinner animation="border" variant="primary" />
+                            </td>
+                            <td>
+                                <Spinner animation="border" variant="primary" />
+                            </td>
+                            <td>
+                                <Spinner animation="border" variant="primary" />
+                            </td>
+                            <td>
+                                <Spinner animation="border" variant="primary" />
+                            </td>
                         </tr>
                     )}
                 </tbody>
             </Table>
 
-            <h1>GPA : {gpa}</h1>
+            <h1 className="mx-4">GPA : {gpa}</h1>
         </div>
     );
 };
