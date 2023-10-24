@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin, isAuth } from "../middleware/authMiddleware.js";
 
 import {
     getAllSubjects,
@@ -17,12 +18,12 @@ router.get("/", getAllSubjects);
 router.get("/:id", getSubjectById);
 
 // Route for Save a new Subject
-router.post("/", saveNewSubject);
+router.post("/", isAdmin, saveNewSubject);
 
 // Route for update a Subject
-router.put("/:id", updateSubject);
+router.put("/:id", isAdmin, updateSubject);
 
 // Route for delete Subject by id
-router.delete("/:id", deleteSubjectById);
+router.delete("/:id", isAdmin, deleteSubjectById);
 
 export default router;

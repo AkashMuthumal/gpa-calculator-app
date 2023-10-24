@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import connection from "../config/database.js";
 
 const userSchema = mongoose.Schema(
     {
@@ -14,10 +15,6 @@ const userSchema = mongoose.Schema(
             type: String,
             require: true,
         },
-        password: {
-            type: String,
-            require: true,
-        },
         dateOfAdmission: {
             type: Date,
             require: true,
@@ -27,10 +24,19 @@ const userSchema = mongoose.Schema(
             require: true,
             unique: true,
         },
+        hash: {
+            type: String,
+        },
+        salt: {
+            type: String,
+        },
+        admin: {
+            type: String,
+        },
     },
     {
         timestamps: true,
     }
 );
 
-export const User = mongoose.model("User", userSchema);
+export const User = connection.model("User", userSchema);

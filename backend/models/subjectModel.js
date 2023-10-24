@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import connection from "../config/database.js";
 
 const subjectSchema = mongoose.Schema(
     {
@@ -25,4 +26,4 @@ const subjectSchema = mongoose.Schema(
     }
 );
 
-export const Subject = mongoose.model("Subject", subjectSchema);
+export const Subject = connection.model("Subject", subjectSchema);

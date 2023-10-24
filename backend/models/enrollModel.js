@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import connection from "../config/database.js";
 
 const enrollSchema = mongoose.Schema(
     {
@@ -22,4 +23,4 @@ const enrollSchema = mongoose.Schema(
     }
 );
 
-export const Enroll = mongoose.model("Enroll", enrollSchema);
+export const Enroll = connection.model("Enroll", enrollSchema);
